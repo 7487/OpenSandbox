@@ -803,7 +803,7 @@ export class Sandbox {
     // Wait until execd becomes reachable and passes health check.
     while (true) {
       throwIfAborted(opts.signal);
-      if (Date.now() > deadline) break;
+      if (Date.now() >= deadline) break;
       attempt++;
       try {
         if (opts.healthCheck) {
