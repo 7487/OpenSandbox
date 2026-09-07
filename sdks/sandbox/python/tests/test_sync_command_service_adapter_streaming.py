@@ -126,6 +126,19 @@ class _SseTransport(httpx.BaseTransport):
         )
 
 
+@pytest.mark.parametrize(
+    "timeout",
+    [timedelta(milliseconds=-1), timedelta(microseconds=-1), timedelta(microseconds=-999)],
+)
+def test_sync_run_command_rejects_negative_timeout(timeout: timedelta) -> None:
+    cfg = ConnectionConfigSync(protocol="http")
+    endpoint = SandboxEndpoint(endpoint="localhost:44772", port=44772)
+    adapter = CommandsAdapterSync(cfg, endpoint)
+
+    with pytest.raises(InvalidArgumentException):
+        adapter.run("pwd", opts=RunCommandOpts(timeout=timeout))
+
+
 def test_sync_run_command_streaming_happy_path_updates_execution() -> None:
     cfg = ConnectionConfigSync(protocol="http", transport=_SseTransport())
     endpoint = SandboxEndpoint(endpoint="localhost:44772", port=44772)
